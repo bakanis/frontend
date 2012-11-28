@@ -43,12 +43,13 @@ define([
         }
     };
 
-    var ready = function(req, config, userPrefs) {
+    var ready = function(req, config) {
         modules.transcludeRelated(config);
 
-        if(config.page.isLive) {
+        if (config.page.isLive) {
             modules.initLiveBlogging(config.switches);
         }
+        
     };
 
     return {

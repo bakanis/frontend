@@ -1,5 +1,14 @@
-/*global guardian:true */
-define(['common', 'bonzo', 'bean'], function(common, bonzo, bean) {
+define([
+    'common',
+    'modules/userPrefs',
+    'bonzo',
+    'bean'
+], function(
+    common,
+    userPrefs,
+    bonzo,
+    bean
+) {
 
     var TrailblockToggle = function () {
 
@@ -49,14 +58,18 @@ define(['common', 'bonzo', 'bean'], function(common, bonzo, bean) {
                 trigger.attr('data-link-name', hideTrailblock);
                 
                 if (!manualTrigger) { // don't add it to prefs since we're reading from them
-                    model.logPreference(hideTrailblock, trailblockId);
+                    var shouldHideSection = true;
+                    if (hideTrailblock === "Hide") {
+                        shouldHideSection = false;
+                    }
+                    model.logPreference(shouldHideSection, trailblockId);
                 }
             },
 
             renderUserPreference: function () {
                 // bit of duplication here from function below
                 if (window.localStorage) {
-                    var existingPrefs = guardian.userPrefs.get(options.prefName);
+                    var existingPrefs = userPrefs.get(options.prefName);
 
                     if (existingPrefs) {
                         var sectionArray = existingPrefs.split(',');
@@ -73,9 +86,9 @@ define(['common', 'bonzo', 'bean'], function(common, bonzo, bean) {
         var model = {
 
             logPreference: function (shouldHideSection, section) {
-                
+
                 if (window.localStorage) {
-                    var existingPrefs = guardian.userPrefs.get(options.prefName);
+                    var existingPrefs = userPrefs.get(options.prefName);
                     
                     if (existingPrefs) {
 
@@ -95,11 +108,11 @@ define(['common', 'bonzo', 'bean'], function(common, bonzo, bean) {
                         }
 
                         var newPrefs = sectionArray.join(',');
-                        guardian.userPrefs.set(options.prefName, newPrefs);
+                        userPrefs.set(options.prefName, newPrefs);
                     
                     // need to create it instead
                     } else {
-                        guardian.userPrefs.set(options.prefName, section);
+                        userPrefs.set(options.prefName, section);
                     }
 
                 }

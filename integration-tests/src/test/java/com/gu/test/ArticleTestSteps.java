@@ -77,7 +77,7 @@ public class ArticleTestSteps {
 
 	@Then("^\"([^\"]*)\" is displayed$")
 	public void is_displayed(String headerText) throws Throwable {
-		WebElement relatedHeader = webDriver.findElementWait(By.cssSelector("#related-trails h3"));
+		WebElement relatedHeader = webDriver.findElementWait(By.cssSelector("#js-related h3"));
 		Assert.assertEquals(headerText, relatedHeader.getText());
 	}
 
@@ -88,12 +88,12 @@ public class ArticleTestSteps {
 
 	@When("^I select the sectional \"([^\"]*)\"$")
 	public void I_select_sectional(String arg1) throws Throwable {
-		webDriver.clickLink("the guardian");
+		webDriver.click(By.xpath("//*[@id='js-popular-tabs']/li[2]/a"));
 	}
 
 	@When("^I select the pan-site \"([^\"]*)\"$")
 	public void I_select_pan_site(String arg1) throws Throwable {
-		webDriver.click(By.cssSelector("#js-popular-tabs > li > a"));
+		webDriver.click(By.xpath("//*[@id='js-popular-tabs']/li[1]/a"));
 	}
 
 	@Then("^I can see a list of the most popular stories on guardian.co.uk for the section I am in$")

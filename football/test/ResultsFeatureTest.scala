@@ -75,5 +75,42 @@ class ResultsFeatureTest extends FeatureSpec with GivenWhenThen with ShouldMatch
         }
       }
     }
+
+    scenario("The 'Desktop version' link points to the correct, equivalent desktop page") {
+
+      given("I visit the results page")
+      and("I am on the 'UK' edition")
+      HtmlUnit("/football/results") { browser =>
+        import browser._
+
+        then("the 'Desktop version' link should point to 'http://www.guardian.co.uk/football/matches?mobile-redirect=false'")
+        findFirst("#main-site").getAttribute("href") should be("http://www.guardian.co.uk/football/matches?mobile-redirect=false")
+      }
+
+      given("I visit the results page")
+      and("I am on the 'US' edition")
+      HtmlUnit.US("/football/results") { browser =>
+        import browser._
+
+        then("the 'Desktop version' link should point to 'http://www.guardiannews.com/football/matches?mobile-redirect=false'")
+        findFirst("#main-site").getAttribute("href") should be("http://www.guardiannews.com/football/matches?mobile-redirect=false")
+      }
+
+    }
+
+    scenario("Matches are ordered by start time, then alphabet") {
+
+      given("I am on the 'results' page")
+      HtmlUnit("/football/results") { browser =>
+        import browser._
+
+        then("the 'Scottish Division Two' matches on 'today' should be ordered as 'Albion, Aloa, Brechin, East Fife, Queen of South'")
+        val orderedMatches: List[String] = "Albion, Alloa, Brechin, East Fife, Queen of South".split(", ").toList
+
+        $("[data-link-name='competition | Scottish Division Two']").find(".matches").find(".match-home").getTexts().toList should be(orderedMatches)
+      }
+
+    }
+
   }
 }

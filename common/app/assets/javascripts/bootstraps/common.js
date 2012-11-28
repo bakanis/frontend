@@ -2,6 +2,7 @@ define([
     //Commmon libraries
     'common',
     'modules/detect',
+    'modules/userPrefs',
     //Vendor libraries
     'domReady',
     'qwery',
@@ -19,10 +20,11 @@ define([
     'modules/analytics/clickstream',
     'modules/analytics/omniture',
     'modules/adverts/adverts',
-    'modules/cookies',
+    'modules/cookies'
 ], function (
     common,
     detect,
+    userPrefs,
 
     domReady,
     qwery,
@@ -79,11 +81,8 @@ define([
 
         loadFonts: function(config, ua, prefs) {
             var showFonts = false;
-            if(config.switches.fontFamily || prefs.isOn('font-family')) {
+            if(config.switches.webFonts) {
                 showFonts = true;
-            }
-            if (prefs.isOff('font-family')) {
-                showFonts = false;
             }
             var fileFormat = detect.getFontFormatSupport(ua),
                 fontStyleNodes = document.querySelectorAll('[data-cache-name].initial');
@@ -104,21 +103,13 @@ define([
         },
 
         loadOphanAnalytics: function () {
-            require(['http://s.ophan.co.uk/js/t6.min.js'], function (ophan) {});
+            require(['js!http://s.ophan.co.uk/js/t6.min.js'], function (ophan) {});
         },
 
         loadAdverts: function (config) {
             Adverts.init(config);
-            Adverts.loadAds();
 
-            // Check every second if page has scrolled and attempt to load new ads.
-            var currentScroll = window.pageYOffset;
-            setInterval(function() {
-                if (window.pageYOffset !== currentScroll) {
-                    currentScroll = window.pageYOffset;
-                    Adverts.loadAds();
-                }
-            }, 1000);
+            common.mediator.on('modules:adverts:docwrite:loaded', Adverts.loadAds);
         },
 
         cleanupCookies: function() {
@@ -126,7 +117,7 @@ define([
         }
     };
 
-    var ready = function(config, userPrefs) {
+    var ready = function(config) {
         modules.attachGlobalErrorHandler();
         modules.loadFonts(config, navigator.userAgent, userPrefs);
         modules.upgradeImages();
@@ -141,7 +132,7 @@ define([
     };
 
     // If you can wait for load event, do so.
-    var defer = function(config, userPrefs) {
+    var defer = function(config) {
         common.deferToLoadEvent(function() {
             modules.loadOmnitureAnalytics(config);
             modules.loadOphanAnalytics();
@@ -150,9 +141,9 @@ define([
         });
     };
 
-    var init = function (config, userPrefs) {
+    var init = function (config) {
         ready(config, userPrefs);
-        defer(config, userPrefs);
+        defer(config);
     };
 
     return {
